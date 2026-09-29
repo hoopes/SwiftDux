@@ -4,6 +4,7 @@ import Foundation
 /// Represents  a storable container for a state object.
 ///
 /// Extend this protocol to implement new methods for the Store<_> and StoreProxy<_> types.
+@preconcurrency @MainActor
 public protocol StateStorable {
   /// The type of the stored state object.
   associatedtype State

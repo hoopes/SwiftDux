@@ -13,6 +13,7 @@ import SwiftUI
 ///   )
 /// }
 /// ```
+@preconcurrency @MainActor
 public struct ActionBinder {
   @usableFromInline
   internal var actionDispatcher: ActionDispatcher

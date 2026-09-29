@@ -5,6 +5,7 @@ import Foundation
 ///
 /// Once an action is sent, the sender shouldn't expect anything to occur. Instead, it should rely
 /// solely on changes to the state of the application to respond.
+@preconcurrency @MainActor
 public protocol ActionDispatcher {
 
   /// Sends an action to mutate the application state.

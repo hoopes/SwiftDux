@@ -4,6 +4,7 @@ import Foundation
 ///
 /// A store is given a single root `Reducer`. As it's sent actions, it runs the reducer to
 /// update the application's state.
+@preconcurrency @MainActor
 public protocol Reducer {
 
   /// The type of state that the `Reducer` is able to mutate.

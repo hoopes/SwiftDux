@@ -4,6 +4,7 @@ import SwiftUI
 ///
 /// This should not be used directly. Instead, use ConnectableView. This protocol isn't combined into ConnectableView due
 /// to a possible bug in Swift that throws an invalid assocated type if Props isn't explicitly typealiased.
+@preconcurrency @MainActor
 public protocol Connectable {
 
   associatedtype State

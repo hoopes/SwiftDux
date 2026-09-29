@@ -2,6 +2,7 @@ import Combine
 import Foundation
 
 /// Stores and mutates the state of an application.
+@preconcurrency @MainActor
 public final class Store<State>: StateStorable {
 
   /// The current state of the store.

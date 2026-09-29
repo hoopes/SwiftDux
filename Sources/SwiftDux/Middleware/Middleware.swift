@@ -8,6 +8,7 @@ import Foundation
 /// block it entirely.
 ///
 /// Middleware can also be used to set up external hooks from services.
+@preconcurrency @MainActor
 public protocol Middleware {
   associatedtype State
 
