@@ -2,6 +2,7 @@ import XCTest
 import Combine
 @testable import SwiftDux
 
+@MainActor
 final class PerformanceTests: XCTestCase {
   
   func testOrderedStatePerformance() {
@@ -44,9 +45,4 @@ final class PerformanceTests: XCTestCase {
     // Needed so it doesn't get optimized away.
     XCTAssertEqual(sinks.count, subsriberCount)
   }
-
-  static var allTests = [
-    ("testOrderedStatePerformance", testOrderedStatePerformance),
-    ("testStoreUpdatePerformance", testStoreUpdatePerformance),
-  ]
 }

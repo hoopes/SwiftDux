@@ -2,6 +2,7 @@ import XCTest
 import Combine
 @testable import SwiftDux
 
+@MainActor
 final class CompositeMiddlewareTests: XCTestCase {
   
   func testCompiningMiddleware() {
@@ -19,10 +20,6 @@ final class CompositeMiddlewareTests: XCTestCase {
       "123AB"
     )
   }
-  
-  static var allTests = [
-    ("testCombiningReducers", testCompiningMiddleware)
-  ]
 }
 
 extension CompositeMiddlewareTests {

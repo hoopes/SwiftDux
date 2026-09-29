@@ -4,9 +4,10 @@ import Dispatch
 import SwiftDux
 @testable import SwiftDuxExtras
 
+@MainActor
 final class PrintActionMiddlewareTests: XCTestCase {
   
-  override func setUp() {
+  override func setUp() async throws {
   }
   
   func testPrintAction() {
@@ -19,10 +20,6 @@ final class PrintActionMiddlewareTests: XCTestCase {
     store.send(TestAction.actionB)
     XCTAssertEqual(log, ["prepare", "actionB"])
   }
-  
-  static var allTests = [
-    ("testPrintAction", testPrintAction),
-  ]
 }
 
 extension PrintActionMiddlewareTests {

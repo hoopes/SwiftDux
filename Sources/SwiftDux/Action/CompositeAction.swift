@@ -14,16 +14,32 @@ public struct CompositeAction: RunnableAction {
     self.actions = actions
   }
 
-  @MainActor public func run<T>(store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
+  // Each action starts when the one before it completes, which can be on any thread, so this is
+  // explicitly nonisolated: otherwise it, and the closure below, would inherit the main actor from
+  // the requirement it satisfies, and trap off it. The actions touch the store, so each is started
+  // on the main actor - synchronously when the previous one completed on the main thread, as it
+  // always did, and on the main queue otherwise.
+  nonisolated public func run<T>(store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
     actions
       .publisher
-      .flatMap(maxPublishers: .max(1)) { action in
-        self.run(action: action, forStore: store)
+      .flatMap(maxPublishers: .max(1)) { action -> AnyPublisher<Action, Never> in
+        let action = UncheckedSendable(action)
+        guard Thread.isMainThread else {
+          return Just(())
+            .receive(on: DispatchQueue.main)
+            .flatMap { _ in Self.start(action, forStore: store) }
+            .eraseToAnyPublisher()
+        }
+        return Self.start(action, forStore: store)
       }
       .eraseToAnyPublisher()
   }
 
-  @MainActor private func run<T>(action: Action, forStore store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
+  private static func start<T>(_ action: UncheckedSendable<Action>, forStore store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
+    MainActor.assumeIsolated { UncheckedSendable(run(action: action.value, forStore: store)) }.value
+  }
+
+  @MainActor private static func run<T>(action: Action, forStore store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
     if let action = action as? RunnableAction {
       return action.run(store: store)
     }

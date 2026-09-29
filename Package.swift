@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:6.0
 
 import PackageDescription
 
@@ -14,7 +14,7 @@ let package = Package(
       targets: ["SwiftDux", "SwiftDuxExtras"]),
   ],
   dependencies: [
-    .package(name: "SnapshotTesting", url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.8.2")
+    .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.8.2")
   ],
   targets: [
     .target(
@@ -28,7 +28,8 @@ let package = Package(
       dependencies: [
         "SwiftDux",
         "SwiftDuxExtras",
-        "SnapshotTesting"],
+        .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+      ],
       exclude: ["UI/__Snapshots__"]),
   ]
 )

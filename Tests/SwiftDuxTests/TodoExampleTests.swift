@@ -2,6 +2,7 @@ import XCTest
 import Combine
 @testable import SwiftDux
 
+@MainActor
 final class TodoExampleTests: XCTestCase {
   
   func testInitialStateValue() {
@@ -27,10 +28,4 @@ final class TodoExampleTests: XCTestCase {
     let todo = todoList?.todos.values.first!
     XCTAssertEqual(lastTodo?.id, todo?.id)
   }
-  
-  static var allTests = [
-    ("testInitialStateValue", testInitialStateValue),
-    ("testAddTodo", testAddTodo),
-    ("testRemoveTodos", testRemoveTodos),
-  ]
 }

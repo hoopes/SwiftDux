@@ -50,4 +50,4 @@ final class TodosReducer<State>: Reducer where State: TodoListStateRoot {
   }
 }
 
-let RootReducer = TodoListsReducer() + TodosReducer()
+@MainActor let RootReducer = TodoListsReducer() + TodosReducer()

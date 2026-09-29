@@ -19,7 +19,11 @@ public struct ActionBinding<Value> {
 
   @inlinable internal init(value: Value, isEqual: @escaping (Value) -> Bool, set: @escaping (Value) -> Void) {
     self.isEqual = isEqual
-    self.projectedValue = Binding(get: { value }, set: set)
+    // SwiftUI's Binding takes @Sendable closures, but it calls them on the main actor, where
+    // the views that own these bindings live. The captured value is never mutated.
+    nonisolated(unsafe) let value = value
+    nonisolated(unsafe) let set = set
+    self.projectedValue = Binding(get: { value }, set: { set($0) })
   }
 
   @inlinable static internal func constant<T>(value: T) -> ActionBinding<T> {

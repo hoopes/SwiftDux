@@ -10,10 +10,10 @@ public protocol AnyStore: ActionDispatcher {
   func unwrap<T>(as type: T.Type) -> StoreProxy<T>?
 }
 
-internal final class AnyStoreWrapper<T>: AnyStore {
-  let store: Store<T>
+internal final class AnyStoreWrapper<StoreState>: AnyStore {
+  let store: Store<StoreState>
 
-  init(store: Store<T>) {
+  init(store: Store<StoreState>) {
     self.store = store
   }
 
@@ -30,7 +30,7 @@ internal final class AnyStoreWrapper<T>: AnyStore {
   }
 }
 
-struct NoopAnyStore: AnyStore {
+nonisolated struct NoopAnyStore: AnyStore {
   func unwrap<T>(as type: T.Type) -> StoreProxy<T>? {
     return nil
   }

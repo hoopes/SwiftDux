@@ -10,14 +10,15 @@ import SwiftDux
 import Combine
 @testable import SwiftDuxExtras
 
+@MainActor
 class JSONStatePersistorTests: XCTestCase {
   var location: TestLocation!
   
-  override func setUp() {
+  override func setUp() async throws {
     location = TestLocation()
   }
   
-  override func tearDown() {
+  override func tearDown() async throws {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
   }
   
@@ -62,13 +63,6 @@ class JSONStatePersistorTests: XCTestCase {
     persistor.save(TestState(name: "Bob"))
     XCTAssertEqual(persistor.restore(), TestState(name: "Bob"))
   }
-  
-  static var allTests = [
-    ("testSaveState", testSaveState),
-    ("testSaveStateWithPubisher", testSaveStateWithPubisher),
-    ("testSaveStateFromStore", testSaveStateFromStore),
-    ("testRestoreState", testRestoreState),
-  ]
 }
 
 extension JSONStatePersistorTests {

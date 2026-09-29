@@ -3,12 +3,13 @@ import Combine
 import Dispatch
 @testable import SwiftDux
 
+@MainActor
 final class OrderedStateTests: XCTestCase {
   let bob = User(id: "2", name: "Bob")
   let bill = User(id: "3", name: "Bill")
   let john = User(id: "1", name: "John")
   
-  override func setUp() {
+  override func setUp() async throws {
   }
   
   func testInitializeWithArray() {
@@ -151,31 +152,6 @@ final class OrderedStateTests: XCTestCase {
     XCTAssertNotEqual(OrderedState(bob, john, bill), OrderedState(john, bob, bill))
     XCTAssertEqual(OrderedState(john, bob, bill), OrderedState(john, bob, bill))
   }
-
-  static var allTests = [
-    ("testInitializeWithArray", testInitializeWithArray),
-    ("testInitializeWithVariadicArguments", testInitializeWithVariadicArguments),
-    ("testEncode", testEncode),
-    ("testAppendNewItem", testAppendNewItem),
-    ("testAppendExistingItem", testAppendExistingItem),
-    ("testPrepend", testPrepend),
-    ("testInsertNewItem", testInsertNewItem),
-    ("testInsertExistingItem", testInsertExistingItem),
-    ("testRemove", testRemove),
-    ("testRemoveIndexSet", testRemoveIndexSet),
-    ("testMoveOneUserFoward", testMoveOneUserFoward),
-    ("testMoveOneUserBackwards", testMoveOneUserBackwards),
-    ("testMoveTwoUsersFoward", testMoveTwoUsersFoward),
-    ("testMoveTwoUsersBackwards", testMoveTwoUsersBackwards),
-    ("testMoveAllUsers", testMoveAllUsers),
-    ("testSort", testSort),
-    ("testSorted", testSorted),
-    ("testFilter", testFilter),
-    ("testIndexSubscript", testIndexSubscript),
-    ("testIdSubscript", testIdSubscript),
-    ("testIdSubscriptWithInteger", testIdSubscriptWithInteger),
-    ("testEquality", testEquality),
-  ]
 }
 
 extension OrderedStateTests {

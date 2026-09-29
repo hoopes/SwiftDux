@@ -3,11 +3,12 @@ import Combine
 import SwiftUI
 @testable import SwiftDux
 
+@MainActor
 final class ActionBinderTests: XCTestCase {
   var store: Store<TestState>!
   var binder: ActionBinder!
   
-  override func setUp() {
+  override func setUp() async throws {
     self.store = Store(state: TestState(), reducer: TestReducer())
     self.binder = ActionBinder(actionDispatcher: store)
   }

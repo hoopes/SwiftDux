@@ -38,7 +38,7 @@ extension Action {
   ///
   /// - Parameter block: A block of code to execute once the previous action has completed.
   /// - Returns: A composite action.
-  @inlinable public func then(_ block: @escaping () -> Void) -> CompositeAction {
+  @inlinable public func then(_ block: @escaping @MainActor () -> Void) -> CompositeAction {
     then(ActionPlan<Any> { _ in block() })
   }
 }

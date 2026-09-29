@@ -10,16 +10,17 @@ import SwiftDux
 import Combine
 @testable import SwiftDuxExtras
 
+@MainActor
 class PersistStateMiddlewareTests: XCTestCase {
   var location: TestLocation!
   var persistor: JSONStatePersistor<TestState>!
   
-  override func setUp() {
+  override func setUp() async throws {
     location = TestLocation()
     persistor = JSONStatePersistor<TestState>(location: location)
   }
   
-  override func tearDown() {
+  override func tearDown() async throws {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
   }
   
@@ -41,11 +42,6 @@ class PersistStateMiddlewareTests: XCTestCase {
     let store = createStore(with: PersistStateMiddleware(persistor))
     XCTAssertEqual(store.state.name, "Rose")
   }
-  
-  static var allTests = [
-    ("testSaveState", testSaveState),
-    ("testRestoreState", testRestoreState),
-  ]
 }
 
 extension PersistStateMiddlewareTests {

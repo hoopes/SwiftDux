@@ -2,6 +2,7 @@ import XCTest
 import Combine
 @testable import SwiftDux
 
+@MainActor
 final class StoreProxyTests: XCTestCase {
   
   func testAccessingState() {
@@ -22,9 +23,4 @@ final class StoreProxyTests: XCTestCase {
     let proxy = store.proxy(for: TodoListStateRoot.self)
     XCTAssertNotNil(proxy)
   }
-  
-  static var allTests = [
-    ("testAccessingState", testAccessingState),
-    ("testSendingAction", testSendingAction),
-  ]
 }

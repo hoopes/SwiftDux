@@ -25,7 +25,7 @@ public struct CompositeMiddleware<State, A, B>: Middleware where A: Middleware, 
 ///   - previousMiddleware: The  middleware to be called first.
 ///   - nextMiddleware: The next middleware to call.
 /// - Returns: The combined middleware.
-@inlinable public func + <M1, M2>(previousMiddleware: M1, _ nextMiddleware: M2) -> CompositeMiddleware<M1.State, M1, M2>
+@preconcurrency @MainActor @inlinable public func + <M1, M2>(previousMiddleware: M1, _ nextMiddleware: M2) -> CompositeMiddleware<M1.State, M1, M2>
 where M1: Middleware, M2: Middleware, M1.State == M2.State {
   CompositeMiddleware(previousMiddleware: previousMiddleware, nextMiddleware: nextMiddleware)
 }

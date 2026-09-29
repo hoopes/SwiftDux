@@ -2,14 +2,15 @@ import XCTest
 import Combine
 @testable import SwiftDux
 
+@MainActor
 final class StoreTests: XCTestCase {
   var store: Store<TestSendingState>!
   
-  override func setUp() {
+  override func setUp() async throws {
     store = Store(state: TestSendingState(text: "initial text"), reducer: TestSendingReducer())
   }
   
-  override func tearDown() {
+  override func tearDown() async throws {
     store = nil
   }
   
@@ -68,13 +69,36 @@ final class StoreTests: XCTestCase {
     XCTAssertEqual(store.state.text, "test")
     cancellable.cancel()
   }
-  
-  static var allTests = [
-    ("testSubscribingToActionPlans", testSubscribingToActionPlans),
-    ("testSubscribingToActionPlans", testSubscribingToActionPlans),
-    ("testSubscribingToComplexActionPlans", testSubscribingToComplexActionPlans),
-    ("testStoreCleansUpSubscriptions", testFutureAction),
-  ]
+
+  func testActionPlansEmittingOffTheMainThreadDispatchOnIt() async throws {
+    store.send(ActionPlan<TestSendingState> { _ in
+      Just<Action>(TestSendingAction.setText("from a background queue"))
+        .receive(on: DispatchQueue.global())
+    })
+
+    // The action hops to the main queue, which this test holds until it suspends.
+    XCTAssertEqual(store.state.text, "initial text")
+    for _ in 0..<200 where store.state.text != "from a background queue" {
+      try await Task.sleep(nanoseconds: 5_000_000)
+    }
+    XCTAssertEqual(store.state.text, "from a background queue")
+  }
+
+  func testCompositeActionsContinueOnTheMainThreadAfterAnOffMainPlan() async throws {
+    store.send(
+      ActionPlan<TestSendingState> { _ in
+        Just<Action>(TestSendingAction.setText("from a background queue"))
+          .receive(on: DispatchQueue.global())
+      }
+      .then(TestSendingAction.setValue(1))
+    )
+
+    for _ in 0..<200 where store.state.value != 1 {
+      try await Task.sleep(nanoseconds: 5_000_000)
+    }
+    XCTAssertEqual(store.state.text, "from a background queue")
+    XCTAssertEqual(store.state.value, 1)
+  }
 }
 
 extension StoreTests {

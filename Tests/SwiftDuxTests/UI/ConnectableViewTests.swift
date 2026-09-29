@@ -5,10 +5,11 @@ import SnapshotTesting
 @testable import SwiftDux
 
 #if os(iOS)
+@MainActor
 final class ConnectableViewTests: XCTestCase {
   var store: Store<TestState>!
   
-  override func setUp() {
+  override func setUp() async throws {
     self.store = Store(state: TestState(), reducer: TestReducer())
   }
   

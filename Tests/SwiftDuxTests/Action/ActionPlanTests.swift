@@ -3,11 +3,12 @@ import Combine
 import Dispatch
 @testable import SwiftDux
 
+@MainActor
 final class ActionPlanTests: XCTestCase {
   var store: Store<TestState>!
   var sentActions: [TestAction] = []
   
-  override func setUp() {
+  override func setUp() async throws {
     store = Store(state: TestState(), reducer: TestReducer(), middleware:
       HandleActionMiddleware<TestState> { [weak self] store, action in
         if let action = action as? TestAction {
@@ -133,14 +134,6 @@ final class ActionPlanTests: XCTestCase {
       TestAction.actionB
     ])
   }
-
-  static var allTests = [
-    ("testBasicActionPlan", testBasicActionPlan),
-    ("testBasicActionPlan", testBasicActionPlan),
-    ("testActionPlanWithMultipleSends", testActionPlanWithMultipleSends),
-    ("testPublishableActionPlan", testPublishableActionPlan),
-    ("testChainedActionPlansWithPublisher", testChainedActionPlansWithPublisher),
-  ]
 }
 
 extension ActionPlanTests {

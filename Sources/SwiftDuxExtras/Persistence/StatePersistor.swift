@@ -73,10 +73,11 @@ extension StatePersistor {
   ///   - store: The store to subsctibe to.
   ///   - interval: The time interval to debounce the updates against.
   /// - Returns: A cancellable to unsubscribe from the store.
-  public func save(
+  @MainActor public func save(
     from store: Store<State>,
     debounceFor interval: RunLoop.SchedulerTimeType.Stride = .seconds(1)
   ) -> AnyCancellable {
+    // Debounced onto RunLoop.main, so the state is read on the main actor it belongs to.
     store.didChange
       .debounce(for: interval, scheduler: RunLoop.main)
       .compactMap { [weak store] in store?.state }
@@ -89,10 +90,11 @@ extension StatePersistor {
   ///   - store: The store to subsctibe to.
   ///   - interval: The time interval to debounce the updates against.
   /// - Returns: A cancellable to unsubscribe from the store.
-  public func save(
+  @MainActor public func save(
     from store: StoreProxy<State>,
     debounceFor interval: RunLoop.SchedulerTimeType.Stride = .seconds(1)
   ) -> AnyCancellable {
+    // Debounced onto RunLoop.main, so the state is read on the main actor it belongs to.
     store.didChange
       .debounce(for: interval, scheduler: RunLoop.main)
       .compactMap { _ in store.state }

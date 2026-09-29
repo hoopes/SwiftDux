@@ -2,6 +2,7 @@ import XCTest
 import Combine
 @testable import SwiftDux
 
+@MainActor
 final class CompositeReducerTests: XCTestCase {
   
   func testCombiningReducers() {
@@ -17,10 +18,6 @@ final class CompositeReducerTests: XCTestCase {
       TestState(stateB: "321")
     )
   }
-  
-  static var allTests = [
-    ("testCombiningReducers", testCombiningReducers)
-  ]
 }
 
 extension CompositeReducerTests {

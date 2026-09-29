@@ -1,8 +1,9 @@
 import Combine
 import SwiftUI
 
-/// Default value of the actionDispatcher environment value.
-internal struct NoopActionDispatcher: ActionDispatcher {
+/// Default value of the actionDispatcher environment value. It holds no state, so it is
+/// nonisolated: SwiftUI asks for an environment key's default value from any context.
+nonisolated internal struct NoopActionDispatcher: ActionDispatcher {
 
   func send(_ action: Action) {
     print("Tried dispatching an action `\(action)` without providing a store object.")
@@ -16,7 +17,7 @@ internal struct NoopActionDispatcher: ActionDispatcher {
 
 internal struct ActionDispatcherKey: EnvironmentKey {
   typealias Value = ActionDispatcher
-  static var defaultValue: Value = NoopActionDispatcher()
+  static var defaultValue: Value { NoopActionDispatcher() }
 }
 
 extension EnvironmentValues {

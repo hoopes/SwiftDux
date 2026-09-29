@@ -52,7 +52,7 @@ public struct ActionPlan<State>: RunnableAction {
     self.body = { store in
       body(store)
         .first()
-        .compactMap { _ -> Action? in nil }
+        .compactMap { @Sendable _ -> Action? in nil }
         .eraseToAnyPublisher()
     }
   }

@@ -24,7 +24,15 @@ final internal class ActionSubscriber: Subscriber {
   }
 
   public func receive(_ input: Action) -> Subscribers.Demand {
-    actionDispatcher(input)
+    // The store is isolated to the main actor, but a plan's publisher can emit anywhere. On the
+    // main thread the action is dispatched synchronously, as it always was; from anywhere else
+    // it hops to the main queue rather than racing the store.
+    let delivery = Delivery(actionDispatcher: actionDispatcher, action: input)
+    if Thread.isMainThread {
+      MainActor.assumeIsolated { delivery.dispatch() }
+    } else {
+      DispatchQueue.main.async { MainActor.assumeIsolated { delivery.dispatch() } }
+    }
     return .max(1)
   }
 
@@ -35,6 +43,18 @@ final internal class ActionSubscriber: Subscriber {
   public func cancel() {
     subscription?.cancel()
     subscription = nil
+  }
+}
+
+/// Carries an action from the thread a publisher emitted it on to the main actor. It is handed
+/// over once and never touched from the emitting thread again, which is what makes the unchecked
+/// conformance sound.
+private struct Delivery: @unchecked Sendable {
+  let actionDispatcher: ActionDispatcher
+  let action: Action
+
+  @MainActor func dispatch() {
+    actionDispatcher(action)
   }
 }
 

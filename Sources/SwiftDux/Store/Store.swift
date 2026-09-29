@@ -79,13 +79,42 @@ extension Store: ActionDispatcher {
   ///
   /// - Parameter action: The  action to perform.
   @usableFromInline internal func reduceRunnableAction(_ action: RunnableAction) {
-    var cancellable: AnyCancellable? = nil
+    let running = RunningPlan()
 
-    cancellable = action.run(store: self.proxy())
-      .handleEvents(receiveCompletion: { _ in
-        cancellable?.cancel()
-        cancellable = nil
-      })
-      .send(to: self)
+    // A plan's publisher can complete on any thread, so the completion handler must not belong
+    // to the main actor the way a closure written here otherwise would.
+    running.hold(
+      action.run(store: self.proxy())
+        .handleEvents(receiveCompletion: { @Sendable _ in running.complete() })
+        .send(to: self)
+    )
+  }
+}
+
+/// Keeps a running plan's subscription alive until its publisher completes, which can happen on
+/// any thread, or before the subscription is even held when the plan completes synchronously.
+@usableFromInline
+internal final class RunningPlan: @unchecked Sendable {
+  private let lock = NSLock()
+  private var cancellable: AnyCancellable?
+  private var isComplete = false
+
+  @usableFromInline init() {}
+
+  @usableFromInline func hold(_ cancellable: AnyCancellable) {
+    lock.lock()
+    defer { lock.unlock() }
+    if !isComplete {
+      self.cancellable = cancellable
+    }
+  }
+
+  @usableFromInline func complete() {
+    lock.lock()
+    let cancellable = self.cancellable
+    self.cancellable = nil
+    isComplete = true
+    lock.unlock()
+    cancellable?.cancel()
   }
 }

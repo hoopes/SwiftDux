@@ -8,8 +8,9 @@ import SwiftUI
 /// }
 /// ```
 @available(*, deprecated)
+@MainActor
 @propertyWrapper
-public struct MappedState<State>: DynamicProperty {
+public struct MappedState<State>: @MainActor DynamicProperty {
   @Environment(\.store) private var anyStore
 
   private var store: StoreProxy<State>?
