@@ -37,8 +37,9 @@ final class StoreTests: XCTestCase {
   }
   
   func testSubscribingToComplexActionPlans() {
-    store.send(ActionPlan<TestSendingState> { store in
+    store.send(ActionPlan<TestSendingState> { store -> AnyPublisher<Action, Never> in
       Just<Int>(store.state.value)
+        .eraseToAnyPublisher()
         .map { value -> Int in
           store.send(TestSendingAction.setValue(value + 1))
           return store.state.value
@@ -50,6 +51,7 @@ final class StoreTests: XCTestCase {
         .map { value -> Action in
           TestSendingAction.setValue(value + 1)
         }
+        .eraseToAnyPublisher()
     })
     XCTAssertEqual(store.state.value, 3)
   }
