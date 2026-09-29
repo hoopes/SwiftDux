@@ -32,6 +32,7 @@ final class OrderedStateTests: XCTestCase {
   
   func testEncode() {
     let encoder = JSONEncoder()
+    encoder.outputFormatting = .sortedKeys
     let state = OrderedState(john, bob, bill)
     let json = try! encoder.encode(state)
     XCTAssertEqual(
