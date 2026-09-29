@@ -18,6 +18,15 @@ public struct ActionBinder {
   @usableFromInline
   internal var actionDispatcher: ActionDispatcher
 
+  /// Creates a binder that dispatches its actions to the given dispatcher. A connected view is
+  /// handed one by its Connector; this lets anything else, such as a test calling
+  /// `map(state:binder:)` directly, make its own.
+  ///
+  /// - Parameter actionDispatcher: Receives the actions the binder's bindings send.
+  public init(actionDispatcher: ActionDispatcher) {
+    self.actionDispatcher = actionDispatcher
+  }
+
   /// Create a binding between a given state and an action.
   ///
   /// - Parameters:
