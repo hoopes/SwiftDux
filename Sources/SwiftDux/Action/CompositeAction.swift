@@ -14,7 +14,7 @@ public struct CompositeAction: RunnableAction {
     self.actions = actions
   }
 
-  public func run<T>(store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
+  @MainActor public func run<T>(store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
     actions
       .publisher
       .flatMap(maxPublishers: .max(1)) { action in
@@ -23,7 +23,7 @@ public struct CompositeAction: RunnableAction {
       .eraseToAnyPublisher()
   }
 
-  private func run<T>(action: Action, forStore store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
+  @MainActor private func run<T>(action: Action, forStore store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
     if let action = action as? RunnableAction {
       return action.run(store: store)
     }

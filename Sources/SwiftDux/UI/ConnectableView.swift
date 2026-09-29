@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// A view that connects to the application state.
+@preconcurrency @MainActor
 public protocol ConnectableView: View, Connectable {
   associatedtype Content: View
   associatedtype Body = Connector<Content, State, Props>

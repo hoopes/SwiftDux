@@ -32,7 +32,7 @@ import Foundation
 ///```.
 public struct ActionPlan<State>: RunnableAction {
 
-  @usableFromInline internal typealias Body = (StoreProxy<State>) -> AnyPublisher<Action, Never>
+  @usableFromInline internal typealias Body = @MainActor (StoreProxy<State>) -> AnyPublisher<Action, Never>
 
   @usableFromInline
   internal var body: Body
@@ -40,7 +40,7 @@ public struct ActionPlan<State>: RunnableAction {
   /// Initiate an action plan that returns a publisher of actions.
   ///
   /// - Parameter body: The body of the action plan.
-  @inlinable public init<P>(_ body: @escaping (StoreProxy<State>) -> P) where P: Publisher, P.Output == Action, P.Failure == Never {
+  @inlinable public init<P>(_ body: @escaping @MainActor (StoreProxy<State>) -> P) where P: Publisher, P.Output == Action, P.Failure == Never {
     self.body = { store in body(store).eraseToAnyPublisher() }
   }
 
@@ -48,7 +48,7 @@ public struct ActionPlan<State>: RunnableAction {
   ///
   /// Use this method to wrap asynchronous code in a publisher like `Future<Void, Never>`.
   /// - Parameter body: The body of the action plan.
-  @inlinable public init<P>(_ body: @escaping (StoreProxy<State>) -> P) where P: Publisher, P.Output == Void, P.Failure == Never {
+  @inlinable public init<P>(_ body: @escaping @MainActor (StoreProxy<State>) -> P) where P: Publisher, P.Output == Void, P.Failure == Never {
     self.body = { store in
       body(store)
         .first()
@@ -61,14 +61,14 @@ public struct ActionPlan<State>: RunnableAction {
   ///
   /// The plan expects to complete once the body has returned.
   /// - Parameter body: The body of the action plan.
-  @inlinable public init(_ body: @escaping (StoreProxy<State>) -> Void) {
+  @inlinable public init(_ body: @escaping @MainActor (StoreProxy<State>) -> Void) {
     self.body = { store in
       body(store)
       return Empty().eraseToAnyPublisher()
     }
   }
 
-  @inlinable public func run<T>(store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
+  @MainActor @inlinable public func run<T>(store: StoreProxy<T>) -> AnyPublisher<Action, Never> {
     guard let storeProxy = store.proxy(for: State.self) else {
       fatalError("Store does not support type `\(State.self)` from ActionPlan.")
     }
